@@ -198,3 +198,87 @@ No arquivo **modules/Pages/Providers/PageServiceProvider** adicione a **middlewa
 ```
 Route::namespace('Modules\Pages\Http\Controllers')->middleware(['web'])->group(__DIR__.'/../Routes/web.php');
 ```
+
+Criado um repositório até este passo.
+
+```
+git init
+git add .
+git commit -m "first commit"
+git remote add origin https://github.com/maurouberti/laravel_package_development.git
+git push -u origin master
+```
+
+Passo 5: Criando pacote para tradução
+
+Criar estrutura de pastas e arquivos dentro do diretório **modules**
+
+```
+modules
+├── Location
+│   ├── Http
+│   │   └── Middleware
+│   │        └── LocaleMiddleware.php
+│   ├── Providers
+│   │        └── LocationServiceProvider.php
+│   ├── Routes
+│   │   └── web.php
+```
+
+Criar as *classes* dos arquivos:
+
+```
+web.php (rotas)
+LocaleMiddleware.php (middleware)
+```
+
+Mover o arquivo de **app/Http/Middleware/LocaleMiddleware.php** para **modules/Location/Http/Middleware/LocaleMiddleware.php**
+
+Alterar o namespace do arquivo **modules/Location/Http/Middleware/LocaleMiddleware.php**
+
+´´´
+namespace Modules\Location\Http\Middleware;
+´´´
+
+Alterar o registro da *middleware* no *app/Http/Kernel.php*
+
+```
+\Modules\Location\Http\Middleware\Locale::class,
+```
+
+Registrar *Rotas* no arquivo **modules/Location/Providers/LocationServiceProvider** (não será utilizado controller nas rotas do *location*)
+
+```
+public function boot() {
+    Route::middleware(['web'])->group(__DIR__.'/../Routes/web.php');
+}
+```
+
+> Não retirar a **middleware(['web'])** do arquivo **modules/Pages/Providers/PageServiceProvider.php**, porque após *redirecior*, é chamado novamente a view da Page.
+
+Criar a rota que altera a tradução no arquivo **modules/Location/Routes/web.php** e retirar do arquivo **modules/Pages/Routes/web.php**
+
+```
+Route::get('/locale/{locale}', function($locale) {
+    request()->session()->put('locale', $locale);
+    return redirect('/pages');
+});
+```
+
+Registrar no arquivo **config/app.php**
+
+```
+/*
+ * Package Service Providers...
+ */
+Modules\Location\Providers\LocationServiceProvider::class,
+```
+
+Criado um repositório até este passo.
+
+```
+git add .
+git commit -m "Criando pacote para tradução"
+git remote add origin https://github.com/maurouberti/laravel_package_development.git
+git push -u origin master
+```
