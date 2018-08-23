@@ -10,4 +10,9 @@ class PagesController extends Controller {
         $Pages = Page::all();
         return view('Page::index', ['Pages' => $Pages]);
     }
+    
+    public function view() {
+        echo config('pages.home');
+        echo config('pages.error_page');
+    }
 }

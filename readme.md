@@ -210,6 +210,7 @@ git push -u origin master
 ```
 
 Passo 5: Criando pacote para tradução
+---
 
 Criar estrutura de pastas e arquivos dentro do diretório **modules**
 
@@ -282,3 +283,83 @@ git commit -m "Criando pacote para tradução"
 git remote add origin https://github.com/maurouberti/laravel_package_development.git
 git push -u origin master
 ```
+
+Passo6: Publicando arquivos e merge de configurações
+
+Se criar uma pasta **resources/views/vendor** e  dela outra com o nome do alias que esta registrado no **loadViewsFrom** do arquivo **modules/Paages/Providers/PageServiceProvides**, os arquivos que criar nela subistituirá os arquivo da modulo
+
+```
+resources
+├── views
+│   ├── vendor
+│   │   └── Page
+│   │        └── index.blade.php
+```
+
+> O mesmo se aplica para *loadTranslationsFrom*, 
+
+Para deixar disponível a criação dos arquivo automaticamente abra o arquivo **modules/Paages/Providers/PageServiceProvides** e *publique*
+
+```
+$this->publishes([
+    __DIR__.'/../Views', resource_path('views/pages/Page'),
+], 'views');
+$this->publishes([
+    __DIR__.'/../Lang', resource_path('lang/pages/Page'),
+], 'lang');
+```
+
+> resource_path() retorna o caminho da pasta resource
+
+Criar os arquivo **modules/Pages/config/pages.php** e **modules/Pages/public/assents/style.css**
+
+```
+modules
+├── Pages
+│   ├── config
+│   │   └── pages.php
+│   ├── public
+│   │   └── assents
+│   │        └── style.css
+```
+
+e publicar
+
+```
+$this->publishes([
+    __DIR__.'/../config/pages.php', config_path('pages.php'),
+], 'config');
+$this->publishes([
+    __DIR__.'/../public', public_path('vendor/pages'),
+], 'public');
+```
+
+Para publicar (criar as pastas) execute o comando
+
+```
+php artisan vendor:publish --tag=views
+```
+ou
+```
+php artisan vendor:publish --tag=lang
+```
+ou
+```
+php artisan vendor:publish --tag=conf
+```
+ou
+```
+php artisan vendor:publish --tag=public
+```
+
+ou de todos *publish* do *provider*
+```
+php artisan vendor:publish --provider="Modules\Pages\Providers\PageServiceProvider"
+```
+
+Para forçar criar novamente
+```
+php artisan vendor:publish --provider="Modules\Pages\Providers\PageServiceProvider" --force
+```
+
+

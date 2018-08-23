@@ -11,9 +11,26 @@ class PageServiceProvider extends ServiceProvider {
         $this->loadViewsFrom(__DIR__.'/../Views', 'Page');
         $this->loadMigrationsFrom(__DIR__.'/../Migrations');
         $this->loadTranslationsFrom(__DIR__.'/../Lang', 'Page');
+        
+        $this->publishes([
+            __DIR__.'/../Views' => resource_path('views/pages/Page'),
+        ], 'views');
+        $this->publishes([
+            __DIR__.'/../Lang' => resource_path('lang/vendor/Page'),
+        ], 'lang');
+        
+        $this->publishes([
+            __DIR__.'/../config/pages.php' => config_path('pages.php'),
+        ], 'config');
+        $this->publishes([
+            __DIR__.'/../public/assets/style.css' => public_path('vendor/style.css'),
+        ], 'public');
     }
     
     public function register() {
-        //
+        $this->mergeConfigFrom(
+            __DIR__.'/../config/pages.php',
+            'pages'
+        );
     }
 }
