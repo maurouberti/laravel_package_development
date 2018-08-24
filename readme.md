@@ -284,7 +284,8 @@ git remote add origin https://github.com/maurouberti/laravel_package_development
 git push -u origin master
 ```
 
-Passo6: Publicando arquivos e merge de configurações
+Passo 6: Publicando arquivos e merge de configurações
+---
 
 Se criar uma pasta **resources/views/vendor** e  dela outra com o nome do alias que esta registrado no **loadViewsFrom** do arquivo **modules/Paages/Providers/PageServiceProvides**, os arquivos que criar nela subistituirá os arquivo da modulo
 
@@ -362,4 +363,110 @@ Para forçar criar novamente
 php artisan vendor:publish --provider="Modules\Pages\Providers\PageServiceProvider" --force
 ```
 
+Para fazer um *merge* (manter o arquivo), no arquivo **modules/Pages/Providers/PageServiceProvider.php** adicione:
 
+```
+public function register() {
+    $this->mergeConfigFrom(
+        __DIR__.'/../config/pages.php',
+        'pages'
+    );
+}
+```
+
+> Mantem o arquivo original, mas pode alterar os itens.
+
+Passo 7 - Criando facades
+---
+
+Facade é registrar uma classe com um alias, podendo utilizar os métodos *static*, etc
+
+Criar um classe qualquer
+
+```
+modules
+├── Location
+│   └── Location.php
+```
+
+Exemplo: 
+
+```
+<?php
+namespace Modules\Location;
+
+class Location {
+    private $locale;
+
+    public function __construct($locale = 'pt-br') {
+        $this->locale = $locale;
+    } 
+
+    public function getLocale() {
+        return $this->locale;
+    }    
+}
+```
+
+Registrar com **singleton** no arquivo **modules/Location/Providers/LocationServiceProvider.php**
+
+```
+public function register() {
+    $this->app->singleton('Location.location', function($app) {
+        return new \Modules\Location\Location('pt-br');
+    });
+}
+```
+
+Criar o arquivo de *facade* **modules/Location/Facades/Location.php**
+
+```
+modules
+├── Location
+│   ├── Facades
+│   │   └── Location.php
+```
+
+Arquivo:
+
+```
+<?php
+namespace Modules\Location\Facades;
+
+use Illuminate\Support\Facades\Facade;
+
+class Location extends Facade {
+    protected static function getFacadeAccessor() {
+        return 'Location.location';
+    }
+}
+```
+
+Criar alias no **config/app.php**
+
+```
+'aliases' => [
+    'Location' => Modules\Location\Facades\Location::class
+],
+```
+
+Agora é só utilizar em outros modulos, exemplo: no arquivo **modules/Pages/Http/Controlers/PageController.php**
+
+```
+use Location;
+
+class PagesController extends Controller {
+    public function view() {
+        echo Location::getLocale();
+    }
+}
+```
+
+Criado um repositório até este passo.
+
+```
+git add .
+git commit -m "Criando pacote para tradução"
+git remote add origin https://github.com/maurouberti/laravel_package_development.git
+git push -u origin master
+```

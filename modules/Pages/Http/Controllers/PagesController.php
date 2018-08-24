@@ -4,6 +4,7 @@ namespace Modules\Pages\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Modules\Pages\Page;
+use Location;
 
 class PagesController extends Controller {
     public function index() {
@@ -14,5 +15,6 @@ class PagesController extends Controller {
     public function view() {
         echo config('pages.home');
         echo config('pages.error_page');
+        echo Location::getLocale();
     }
 }

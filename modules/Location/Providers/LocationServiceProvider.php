@@ -11,6 +11,9 @@ class LocationServiceProvider extends ServiceProvider {
     }
     
     public function register() {
-        //
+        $this->app->singleton('Location.location', function($app) {
+//            $config = $app['config']->get('pages.home');
+            return new \Modules\Location\Location('pt-br');
+        });
     }
 }
